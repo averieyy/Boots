@@ -7,16 +7,16 @@ namespace Ashlad {
         public static int sizex = 600;
         public static int sizey = 400;
 
+        public static int playerx = sizex / 2;
+        public static int playery = sizey / 2;
+
         public static bool Paused = true;
 
         public static List<int> currentkeys = new List<int>();
         public static List<int> lastkeys = new List<int>();
         public static Dictionary<int, bool> keys = new Dictionary<int, bool>();
 
-        public static string[] texturepaths = new string[]{
-            "./cursor.png"
-        };
-        public Texture2D[] textures;
+        public static bool mouseDown = false;
 
         public Game () {
 
@@ -24,20 +24,12 @@ namespace Ashlad {
             Raylib.InitAudioDevice();
             Raylib.SetExitKey(KeyboardKey.KEY_NULL);
             Raylib.HideCursor();
-            Raylib.SetWindowIcon(Raylib.LoadImage("./cursor.png"));
-
-            // Load Textures
-            textures = new Texture2D[texturepaths.Length];
-
-            for (int i = 0; i < texturepaths.Length; i++) {
-
-                textures[i] = Raylib.LoadTexture(texturepaths[i]);
-            }
+            Raylib.SetWindowIcon(Raylib.LoadImage("./assets/images/cursor.png"));
         }
 
         public void Run () {
 
-            int fps = 20;
+            int fps = 60;
             long lt = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             long ct;
             double delta = 1000/fps;
@@ -61,14 +53,21 @@ namespace Ashlad {
 
             int mouseX;
             int mouseY;
+
+            mouseX = Raylib.GetMouseX();
+            mouseY = Raylib.GetMouseY();
+
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT)) {
                     
-                mouseX = Raylib.GetMouseX();
-                mouseY = Raylib.GetMouseY();
-
+                if (mouseDown == false)
+                    Raylib.SetMousePosition(sizex/2, sizey/2);
+                mouseDown = true;
             }
-            else
-                Raylib.SetMousePosition(sizex/2, sizey/2);
+            else {
+                if (mouseDown == true)
+                    Raylib.SetMousePosition(sizex/2, sizey/2);
+                mouseDown = false;
+            }
             
             currentkeys.Clear();
             int lk;
@@ -76,21 +75,30 @@ namespace Ashlad {
                 currentkeys.Add(lk);
             }
             lastkeys = currentkeys;
+
+            if (!lastkeys.Contains(27) && currentkeys.Contains(27)) Paused = !Paused;
+
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_W)) playery--;
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_S)) playery++;
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_A)) playerx--;
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_D)) playerx++;
         }
 
         public void Render () {
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.BEIGE);
 
-            // Draw Cursor
-            if (Paused) {
-
-                Raylib.DrawTexture(textures[0], Raylib.GetMouseX(), Raylib.GetMouseY(), Color.WHITE);
-            }
 
             // Start Drawing
 
+            // CLEAR LATER
+            Raylib.DrawTexture(Img.ASHDOWN, playerx-16, playery-16, Color.WHITE);
 
+            // Draw Cursor
+            if (!Raylib.IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON)) {
+
+                Raylib.DrawTexture(Img.STICK, Raylib.GetMouseX(), Raylib.GetMouseY(), Color.WHITE);
+            }
             Raylib.EndDrawing();
         }
     }

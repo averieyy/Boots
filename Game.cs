@@ -1,4 +1,5 @@
 using Raylib_cs;
+using Ashlad.Entities;
 
 namespace Ashlad {
 
@@ -7,8 +8,7 @@ namespace Ashlad {
         public static int sizex = 600;
         public static int sizey = 400;
 
-        public static int playerx = sizex / 2;
-        public static int playery = sizey / 2;
+        public Player p;
 
         public static bool Paused = true;
 
@@ -25,6 +25,7 @@ namespace Ashlad {
             Raylib.SetExitKey(KeyboardKey.KEY_NULL);
             Raylib.HideCursor();
             Raylib.SetWindowIcon(Raylib.LoadImage("./assets/images/cursor.png"));
+            p = new Player();
         }
 
         public void Run () {
@@ -78,21 +79,20 @@ namespace Ashlad {
 
             if (!lastkeys.Contains(27) && currentkeys.Contains(27)) Paused = !Paused;
 
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_W)) playery--;
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_S)) playery++;
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_A)) playerx--;
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_D)) playerx++;
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_W)) p.y--;
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_S)) p.y++;
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_A)) p.x--;
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_D)) p.x++;
         }
 
         public void Render () {
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.BEIGE);
 
-
             // Start Drawing
 
             // CLEAR LATER
-            Raylib.DrawTexture(Img.ASHDOWN, playerx-16, playery-16, Color.WHITE);
+            Raylib.DrawTexture(Img.ASHDOWN, p.x-16, p.y-16, Color.WHITE);
 
             // Draw Cursor
             if (!Raylib.IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON)) {
